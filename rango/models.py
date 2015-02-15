@@ -8,6 +8,7 @@ class Category(models.Model):
 
     class Meta:
         verbose_name_plural = "Categories"
+        ordering = ['name']
 
 class Page(models.Model):
     category = models.ForeignKey(Category)
@@ -16,6 +17,8 @@ class Page(models.Model):
     views = models.IntegerField(default=0)
 
     def __unicode__(self):
-        return self.title
+        return "{0} ({1})".format(self.title, self.category)
 
+    class Meta:
+        ordering = ['category']
 
