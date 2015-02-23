@@ -1,5 +1,6 @@
 from django.http import HttpResponse
 from django.shortcuts import render
+from rango.forms import CategoryForm
 from rango.models import Category, Page
 
 def index(request):
