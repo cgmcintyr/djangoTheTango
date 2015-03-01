@@ -1,4 +1,5 @@
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
@@ -18,6 +19,7 @@ def about(request):
     context_dict = {}
     return render(request, 'rango/about.html', context_dict)
 
+@login_required
 def add_category(request):
     # A HTTP POST?
     if request.method == 'POST':
@@ -42,6 +44,7 @@ def add_category(request):
     # Render the form with error messages (if any)
     return render(request, 'rango/add_category.html', {'form': form})
 
+@login_required
 def add_page(request, category_name_slug):
     try:
         cat = Category.objects.get(slug=category_name_slug)
@@ -179,13 +182,19 @@ def user_login(request):
                 return HttpResponseRedirect('/rango/')
             else:
                 # An inactive account was used - no logging in!
-                return HttpResponse("Your Rango account is disabled.")
+                return render(request, 'rango/login.html', {'loginError': 'Your account has been disabled :('})
         else:
             # Bad login details were provided. So we can't log the user in.
             print "Invalid login details: {0}, {1}".format(username, password)
-            return HttpResponse("Invalid login details supplied.")
+            return render(request, 'rango/login.html', {'loginError': 'Invalid login details'})
     
     else:
         # Not a HTTP POST
-        return render(request, 'rango/login.html', {})
+        return render(request, 'rango/login.html', {'loginError': None})
+
+@login_required
+def user_logout(request):
+    logout(request)
+    return HttpResponseRedirect('/rango/')
+
 
