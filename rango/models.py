@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 from django.template.defaultfilters import slugify
 
@@ -11,7 +12,7 @@ class Category(models.Model):
         self.slug = slugify(self.name)
         super(Category, self).save(*args, **kwargs)
 
-    def __str__(self):
+    def __unicode__(self):
         return self.name
 
     class Meta:
@@ -29,4 +30,16 @@ class Page(models.Model):
 
     class Meta:
         ordering = ['category']
+
+class UserProfile(models.Model):
+    # Link UserProfile to a User model instance
+    user = models.OneToOneField(User)
+
+    # Additional attributes to include
+    website = models.URLField(blank=True)
+    picture = models.ImageField(upload_to='profile_images', blank=True)
+
+    def __unicode__(self):
+        return self.user.username
+
 
