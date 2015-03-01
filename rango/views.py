@@ -103,6 +103,10 @@ def category(request, category_name_slug):
     # Go render the response and return it to the client
     return render(request, 'rango/category.html', context_dict)
     
+@login_required    
+def restricted(request):
+    return render(request, 'rango/restricted.html', {})    
+    
 def register(request):
     # A boolean value for telling the template whether the registration was successful.
     # Set to False intitially. Code Changes value to True when registration succeeds.
