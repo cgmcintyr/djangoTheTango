@@ -4,9 +4,13 @@ from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
-from rango.forms import CategoryForm, PageForm
-from rango.models import Category, Page
 
+from rango.forms import CategoryForm, PageForm
+from rango.models import Category, Page, User, UserProfile
+
+from registration import signals
+from registration.users import UserModel 
+from registration.backends.simple.views import RegistrationView
 
 def index(request):
     
@@ -141,4 +145,25 @@ def category(request, category_name_slug):
 def restricted(request):
     return render(request, 'rango/restricted.html', {})    
 
+# --- USER RELATED VIEWS ----
+
+class MyRegistrationView(RegistrationView):
+    def register(self, request, **cleaned_data):
+        # Create a new User 
+        username, email, password = cleaned_data['username'], cleaned_data['email'], cleaned_data['password1']
+        new_user_object = UserModel().objects.create_user(username, email, password)
+
+        # And links that user to a new (empty) UserProfile
+        profile = UserProfile(user=new_user_object)
+        profile.save()
+        
+        new_user = authenticate(username=username, password=password)
+        login(request, new_user)
+        signals.user_registered.send(sender=self.__class__,
+                                     user=new_user,
+                                     request=request)
+        return new_user
+        
+    def get_success_url(self, request, user):
+        return('/rango/', (), {})
 
