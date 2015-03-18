@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
@@ -7,10 +8,12 @@ from django.shortcuts import render
 
 from rango.forms import CategoryForm, PageForm
 from rango.models import Category, Page, User, UserProfile
+import rango.bing_search as bing_search
 
 from registration import signals
 from registration.users import UserModel 
 from registration.backends.simple.views import RegistrationView
+
 
 def index(request):
     
@@ -148,6 +151,12 @@ def restricted(request):
 # --- USER RELATED VIEWS ----
 
 class MyRegistrationView(RegistrationView):
+    """ 
+    Custom registration-redux RegistrationView which creates a UserProfile object when
+    a new user is registered.
+    Used in tango_with_django_project/urls.py for the user registration page.
+    """
+
     def register(self, request, **cleaned_data):
         # Create a new User 
         username, email, password = cleaned_data['username'], cleaned_data['email'], cleaned_data['password1']
@@ -166,4 +175,23 @@ class MyRegistrationView(RegistrationView):
         
     def get_success_url(self, request, user):
         return('/rango/', (), {})
+
+# --- BING --- 
+
+def search(request):
+    
+    result_list = []
+
+    if request.method == 'POST':
+        query = request.POST['query'].strip()
+        print "--- BING QUERY ---"
+        print query
+        print "--- Stripped ---"
+        print query.strip()
+        print "--- Running query... ---"
+        
+        if query:
+            result_list = bing_search.run_query(query)
+
+    return(render(request, 'rango/search.html', {'result_list': result_list}))
 
