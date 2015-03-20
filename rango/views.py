@@ -3,26 +3,25 @@ from datetime import datetime
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect, HttpResponseNotFound
 from django.shortcuts import render
 
 from rango.forms import CategoryForm, PageForm
 from rango.models import Category, Page, User, UserProfile
 import rango.bing_search as bing_search
-
+ 
 from registration import signals
 from registration.users import UserModel 
 from registration.backends.simple.views import RegistrationView
 
 
 def index(request):
-    
     # Add list of top 5 categorys and top 5 pages to context dictionary.
     category_list = Category.objects.order_by('-likes')[:5]
     page_list = Page.objects.order_by('-views')[:5]
     context_dict = {'categories': category_list, 'top_pages': page_list}
 
-
+    context_dict = {'categories': category_list, 'top_pages': page_list}
     visits = request.session.get('visits')
 
     if not visits:
@@ -60,6 +59,8 @@ def about(request):
 
     return render(request, 'rango/about.html', {'visits': visits})
 
+
+# --- Category/Page Views --- #
 @login_required
 def add_category(request):
     # A HTTP POST?
@@ -144,17 +145,31 @@ def category(request, category_name_slug):
     # Go render the response and return it to the client
     return render(request, 'rango/category.html', context_dict)
     
-@login_required    
-def restricted(request):
-    return render(request, 'rango/restricted.html', {})    
+def track_url(request):
+    """
+    View used to increment Page.views when user visits a page through a rango category page.
+    """
+    if request.method == 'GET':
+        page_id = request.GET.get('page_id')
 
-# --- USER RELATED VIEWS ----
+        if (page_id == None):
+            return HttpResponseBadRequest('<h1>Bad Request (400)</h1>', content_type='text/html')
 
+        try:
+            page = Page.objects.get(id=page_id)
+            print("Page = {0}".format(page))
+            page.views += 1
+            page.save()
+            return HttpResponseRedirect(page.url)
+        except Page.DoesNotExist:
+            return HttpResponseNotFound('<h1>Page not found (404)</h1>', content_type='text/html')
+
+    return HttpResponseRedirect('/rango/')
+
+# --- USER RELATED VIEWS --- #
 class MyRegistrationView(RegistrationView):
     """ 
-    Custom registration-redux RegistrationView which creates a UserProfile object when
-    a new user is registered.
-    Used in tango_with_django_project/urls.py for the user registration page.
+    Custom registration-redux class  which creates a UserProfile object when a User is registered.
     """
 
     def register(self, request, **cleaned_data):
@@ -176,8 +191,7 @@ class MyRegistrationView(RegistrationView):
     def get_success_url(self, request, user):
         return('/rango/', (), {})
 
-# --- BING --- 
-
+# --- BING --- # 
 def search(request):
     
     result_list = []
@@ -194,4 +208,10 @@ def search(request):
             result_list = bing_search.run_query(query)
 
     return(render(request, 'rango/search.html', {'result_list': result_list}))
+
+# --- Other --- #
+@login_required    
+def restricted(request):
+    return render(request, 'rango/restricted.html', {})    
+
 
