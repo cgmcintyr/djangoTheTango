@@ -117,7 +117,7 @@ def add_page(request, category_name_slug):
 def category(request, category_name_slug):
     # Create a context dictionary which we can pass to the template rendering engine
     context_dict = {}
-    
+        
     try:
         # Can we find a category slug with the given name?
         # If we can't, the .get() method raises a DoesNotExist exception
@@ -141,6 +141,15 @@ def category(request, category_name_slug):
         # We get here if we didn't find the specified category
         # Don't do anything - the template displays the "no category" message for us
         pass
+    
+    # If user searched for pages, run bing query and populate results_list
+    result_list = []
+    
+    if request.method == 'POST':
+        query = request.POST['query'].strip()
+        if query:
+            result_list = bing_search.run_query(query)
+            context_dict['result_list'] = result_list
     
     # Go render the response and return it to the client
     return render(request, 'rango/category.html', context_dict)
@@ -193,20 +202,16 @@ class MyRegistrationView(RegistrationView):
 
 # --- BING --- # 
 def search(request):
-    
+    """
+    Retrieves the user's search query from a POST, runs a bing web search using
+    the user's query, then displays results in a list form.
+    """
     result_list = []
 
     if request.method == 'POST':
         query = request.POST['query'].strip()
-        print "--- BING QUERY ---"
-        print query
-        print "--- Stripped ---"
-        print query.strip()
-        print "--- Running query... ---"
-        
         if query:
             result_list = bing_search.run_query(query)
-
     return(render(request, 'rango/search.html', {'result_list': result_list}))
 
 # --- Other --- #
