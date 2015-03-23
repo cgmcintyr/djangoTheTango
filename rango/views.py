@@ -200,6 +200,13 @@ class MyRegistrationView(RegistrationView):
     def get_success_url(self, request, user):
         return('/rango/', (), {})
 
+@login_required    
+def view_profile(request):
+    user_profile = UserProfile(user=request.user)
+
+    return render(request, 'rango/profile.html', {'user_profile': user_profile})    
+
+
 # --- BING --- # 
 def search(request):
     """

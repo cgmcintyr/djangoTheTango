@@ -64,7 +64,7 @@
 			
 			<!-- Display search results in an ordered list -->
       <div class="panel-body">
-				{% if not user.authenticated %} 
+				{% if not user.is_authenticated %} 
 					<p>You must be logged in to add a page to a category!</p>
 				{% endif %}
 

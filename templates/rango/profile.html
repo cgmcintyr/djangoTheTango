@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+{% block title %}{{ user.username }}'s  Profile{% endblock %}
+
+{% block body_block %}
+
+<div class="row">
+	<div class="col-sm-6">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">{{ user.username }}</h3>
+			</div>					
+				{% if user_profile.picture %}
+					<img src="/media/images/{{ user_profile.picture }}" class="img-rounded">	
+				{% else %}
+					<img src={% static "images/default_avatar.png" %} class="img-rounded" />
+				{% endif %}
+		<p><strong>website: </strong>{{ user_profile.website }}</p>
+		<p><strong>email:   </strong>{{ user.email }}</p>
+	</div>
+</div>
+
+    
+{% endblock %}

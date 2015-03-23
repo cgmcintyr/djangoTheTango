@@ -38,10 +38,11 @@
           <ul class="nav navbar-nav navbar-right">
                 <li><a href="{% url 'rango:index' %}">Home</a></li>
                     {% if user.is_authenticated %}
-                        <li><a href="{% url 'rango:restricted' %}">Restricted Page</a></li>
+                        <li><a href="{% url 'rango:restricted' %}">Spooky Page</a></li>
                         <li><a href="{% url 'auth_logout' %}?next=/rango/">Logout</a></li>
-                        <li><a href="{% url 'rango:add_category' %}">Add a New Category</a></li>
-                    {% else %}
+                        <li><a href="{% url 'rango:add_category' %}">Add Category</a></li>
+                        <li><a href="{% url 'rango:profile' %}">Profile</a></li>
+										{% else %}
                         <li><a href="{% url 'registration_register' %}">Register Here</a></li>
                         <li><a href="{% url 'auth_login' %}">Login</a></li>
                     {% endif %}
