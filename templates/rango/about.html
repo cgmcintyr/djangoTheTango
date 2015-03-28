@@ -6,10 +6,15 @@
 
 {% block body_block %}
   <div class="page-header">
-              <h1>About</h1>
-          </div>
-	    <p>This is <strong>Rango's about page</strong>.</p>
-        <p>You've visted this site on <strong>{{ visits }} occasion(s)</strong>.</p>
-		<p>Here is a picture of me coding this website:</p>
-        <img src="{% static "images/about.png" %}" alt="A helpful picture" />
+  	<h1>About</h1>
+  </div>
+	
+	<p>This is <strong>Rango's about page</strong>.</p>
+  <p>You've visted this site on <strong>{{ visits }} occasion(s)</strong>.</p>
+	<p>Here is a picture of me coding this website:</p>
+	<img src="{% static "images/about.png" %}" alt="A helpful picture" />
+  
+	<button id="about-btn">
+		Click me - I run jQuery!
+	</button>
 {% endblock %}
