@@ -13,6 +13,16 @@
 				<h3 class="panel-title">{{category_name}}</h3>
 			</div>
 		</div>
+		
+		<p>
+			<strong id="like_count">{{ category.likes}}</strong> people like this category.
+			{% if user.is_authenticated %}
+				<button id="likes" data-catid="{{ category.id }}" class="btn btn-primary" type="button">
+					<span class="glyphicon glyphicon-thumbs-up"></span>
+					Like
+				</button>
+			{% endif %}
+		</p>
 
     {% if category %}
     	{% if pages %}
