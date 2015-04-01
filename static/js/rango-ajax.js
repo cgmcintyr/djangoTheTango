@@ -15,4 +15,18 @@ $(document).ready(function() {
 			$('#cats').html(data);
 		});
 	});
+	
+	$('.rango-add').click(function(){
+		var title;
+		var url;
+		var catid;
+		
+		title = $(this).attr("data-title");
+		url = $(this).attr("data-url");
+		catid = $(this).attr("data-catid");
+		$.get('/rango/auto_add_page/', {title: title, url: title, category_id: catid}, function(data){
+			$('#pages').html(data);
+		});
+	});
+
 });

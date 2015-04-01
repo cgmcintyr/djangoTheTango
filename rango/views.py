@@ -114,6 +114,27 @@ def add_page(request, category_name_slug):
 
     return render(request, 'rango/add_page.html', context_dict)           
 
+@login_required
+def auto_add_page(request):
+    title = ''
+    url = ''
+    cat_id = ''
+    context_dict = {}
+
+    if request.method == 'GET':
+        title  = request.GET['title']
+        url    = request.GET['url']
+        cat_id = request.GET['category_id']
+
+        if cat_id:
+            category = Category.objects.get(id=int(cat_id))
+            page = Page.objects.get_or_create(category=category, title=title, url=url)
+            
+            pages = Page.objects.filter(category=category).order_by('-views')
+            context_dict['pages'] = pages
+
+    return render(request, 'rango/page_list.html', context_dict)
+
 def category(request, category_name_slug):
     # Create a context dictionary which we can pass to the template rendering engine
     context_dict = {}
