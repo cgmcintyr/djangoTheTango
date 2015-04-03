@@ -3,7 +3,8 @@
 		{% for cat in cat_list %}
 			<li><a href="/rango/category/{{ cat.slug }}">{{ cat.name }}</a></li>
 		{% endfor %}
-	
+	{% elif cat_list.count|length < 1 %}
+		<li></li>	
 	{% else %}
 		<li>No categories at present.</li>
 	{% endif %}
